@@ -10,6 +10,7 @@ let inputs = {
     currentNum: null,
     previousInput: null,
     currentInput: null,
+    previousOperator: null,
     currentOperator: null,
     percentOperator: false,
     result: null,
@@ -31,7 +32,7 @@ buttonContainer.addEventListener('click', function(event){
             handleSymbolClick()
         }
         else if(event.target.matches('.function')){
-            mainText.textContent += event.target.textContent;
+            handlefunctionClick(event.target.textContent);
         }
     }
 });
@@ -39,20 +40,34 @@ buttonContainer.addEventListener('click', function(event){
 function handleNumsClick(){
     if(symbols.includes(inputs.previousInput)){
         inputs.previousNum = inputs.currentNum;
-        inputs.currentNum = parseInt(inputs.currentInput);
+        inputs.currentNum = +inputs.currentInput;
     }
     else {
-        inputs.currentNum = inputs.currentNum*10 + parseInt(inputs.currentInput);
+        inputs.currentNum = inputs.currentNum*10 + +inputs.currentInput;
     }
     console.log(inputs.currentNum);
 }
 
 function handleSymbolClick(){
-
+    if(inputs.currentNum === null){
+        mainText.textContent = 'ERROR';
+        resetInputs();
+    }
+    else if(inputs.currentNum !== null && inputs.previousNum !== null){
+        calculate();
+        inputs.previousOperator = inputs.currentOperator;
+        inputs.currentOperator = inputs.currentInput;
+        inputs.previousNum = inputs.currentNum;
+        inputs.currentNum = inputs.result;
+        mainText.textContent = `${inputs.currentNum} ${currentOperator}`;
+    }
+    else{
+        inputs.previousOperator = inputs.currentOperator;
+        inputs.currentOperator = inputs.currentInput;
+    }
 }
 
-function handlefunctionClick(func){
-}
+
 
 function calculate(){
     if(inputs.currentNum === null || 
@@ -79,7 +94,7 @@ function calculate(){
             }
             else inputs.result = +inputs.previousNum / +inputs.currentNum;
         }
-
+        if(inputs.previousInput !== null) subText.textContent = `${inputs.previousResult}`;
         mainText.textContent = `${inputs.result}`;
     }
     resetInputs();
