@@ -1,4 +1,5 @@
 const symbols = '+-*/';
+const digits = '0123456789';
 const mainText = document.querySelector('#main-text');
 const subText = document.querySelector('#sub-text');
 const buttonContainer = document.querySelector('#button-container');
@@ -28,7 +29,11 @@ buttonContainer.addEventListener('click', function(event){
             handleNumsClick();
         }
         else if(event.target.matches('.math-symbol')){
-            mainText.textContent += (' ' + event.target.textContent + ' ');
+            console.log(inputs.previousInput);
+            if(!symbols.includes(inputs.previousInput)){
+                mainText.textContent += (' ' + event.target.textContent + ' ');
+            }
+            else mainText.textContent = mainText.textContent.slice(0, -3) + (' ' + event.target.textContent + ' ');
             handleSymbolClick()
         }
         else if(event.target.matches('.function')){
@@ -42,9 +47,16 @@ function handleNumsClick(){
         inputs.previousNum = inputs.currentNum;
         inputs.currentNum = +inputs.currentInput;
     }
-    else {
+    else if(inputs.previousInput === '.'){
+        inputs.currentNum = +`${inputs.currentNum}.${inputs.currentInput}`;
+    }
+    else if(inputs.currentInput !== '.' && inputs.currentInput !== null) {
         inputs.currentNum = inputs.currentNum*10 + +inputs.currentInput;
     }
+    else if(inputs.currentNum === null && inputs.previousNum === null){
+        inputs.currentNum = +inputs.currentInput;
+    }
+    console.log(+inputs.currentInput);
     console.log(inputs.currentNum);
 }
 
@@ -53,13 +65,15 @@ function handleSymbolClick(){
         mainText.textContent = 'ERROR';
         resetInputs();
     }
-    else if(inputs.currentNum !== null && inputs.previousNum !== null){
+    else if(inputs.currentNum !== null && inputs.previousNum !== null){ 
+        /* if a symbol is pressed after a complete calculation then takes
+         that calculation to use in the new calculation that uses the newly pressed operator */
         calculate();
         inputs.previousOperator = inputs.currentOperator;
         inputs.currentOperator = inputs.currentInput;
-        inputs.previousNum = inputs.currentNum;
+        inputs.previousNum = null;
         inputs.currentNum = inputs.result;
-        mainText.textContent = `${inputs.currentNum} ${currentOperator}`;
+        mainText.textContent = `${inputs.currentNum} ${inputs.currentOperator} `;
     }
     else{
         inputs.previousOperator = inputs.currentOperator;
@@ -67,7 +81,26 @@ function handleSymbolClick(){
     }
 }
 
+function handlefunctionClick(func){
+    if(func === 'DEL'){
+        
+    }
+    else if(func === 'AC'){
+        mainText.textContent = '';
+        subText.textContent = '';
+        resetInputs();
+    }
+}
 
+function numberPop(){
+    if(digits.includes(inputs.previousInput)){
+
+    }
+    else if(symbols.includes(inputs.previousInput)){
+
+    }
+
+}
 
 function calculate(){
     if(inputs.currentNum === null || 
@@ -77,14 +110,19 @@ function calculate(){
     }
     else{
         inputs.previousResult = inputs.result;
+        let tempResult = 0;
         if(inputs.currentOperator === '+'){
-            inputs.result = +inputs.currentNum + +inputs.previousNum;
+            tempResult = +inputs.currentNum + +inputs.previousNum;
         }
         else if(inputs.currentOperator === '-'){
-            inputs.result = +inputs.previousNum - +inputs.currentNum;
+            tempResult = +inputs.previousNum - +inputs.currentNum;
+            console.log(`currentNum: ${inputs.currentNum}
+                         prevNum: ${inputs.previousNum}
+                         tempResult: ${tempResult}
+                        `);
         }
         else if(inputs.currentOperator === '*'){
-            inputs.result = +inputs.previousNum * +inputs.currentNum;
+            tempResult = +inputs.currentNum * +inputs.previousNum;
         }
         else if(inputs.currentOperator === '/'){
             if(+inputs.currentNum === 0){
@@ -92,13 +130,17 @@ function calculate(){
                 resetInputs();
                 return;
             }
-            else inputs.result = +inputs.previousNum / +inputs.currentNum;
+            else tempResult = +inputs.previousNum / +inputs.currentNum;
         }
-        if(inputs.previousInput !== null) subText.textContent = `${inputs.previousResult}`;
-        mainText.textContent = `${inputs.result}`;
+        console.log(`tempResult: ${tempResult}`);
+        const sign = Math.sign(tempResult);
+        tempResult = Math.abs(tempResult);
+        console.log(`tempResult: ${tempResult}`);
+        inputs.result = sign * parseFloat(tempResult.toFixed(2));
+        
     }
-    resetInputs();
 }
+
 
 function resetInputs(){
     inputs = {
