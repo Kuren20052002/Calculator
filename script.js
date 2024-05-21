@@ -72,9 +72,26 @@ function calculate(){
             inputs.result = +inputs.previousNum * +inputs.currentNum;
         }
         else if(inputs.currentOperator === '/'){
-            inputs.result = +inputs.previousNum / +inputs.currentNum;
+            if(+inputs.currentNum === 0){
+                mainText.textContent = 'ERROR';
+                resetInputs();
+                return;
+            }
+            else inputs.result = +inputs.previousNum / +inputs.currentNum;
         }
 
         mainText.textContent = `${inputs.result}`;
     }
+    resetInputs();
+}
+
+function resetInputs(){
+    inputs = {
+        previousNum: null,
+        currentNum: null,
+        previousInput: null,
+        currentInput: null,
+        currentOperator: null,
+        percentOperator: false,
+    };
 }
