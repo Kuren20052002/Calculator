@@ -1,9 +1,11 @@
+const symbols = '+-*/';
 const mainText = document.querySelector('#main-text');
 const subText = document.querySelector('#sub-text');
+const buttonContainer = document.querySelector('#button-container');
 const equalButton = document.querySelector('#button-equal');
 
 let inputs = {
-    previousResult: 0,
+    previousResult: null,
     previousNum: null,
     currentNum: null,
     previousInput: null,
@@ -13,8 +15,8 @@ let inputs = {
     result: null,
 }
 
+equalButton.addEventListener('click', calculate);
 
-const buttonContainer = document.querySelector('#button-container');
 buttonContainer.addEventListener('click', function(event){
     if(event.target.tagName === 'BUTTON'){  
         inputs.previousInput = inputs.currentInput;
@@ -25,7 +27,8 @@ buttonContainer.addEventListener('click', function(event){
             handleNumsClick();
         }
         else if(event.target.matches('.math-symbol')){
-            mainText.textContent += event.target.textContent;
+            mainText.textContent += (' ' + event.target.textContent + ' ');
+            handleSymbolClick()
         }
         else if(event.target.matches('.function')){
             mainText.textContent += event.target.textContent;
@@ -34,11 +37,7 @@ buttonContainer.addEventListener('click', function(event){
 });
 
 function handleNumsClick(){
-    const symbols = '+-*/';
-
-    console.log(typeof(+inputs.previousInput));
     if(symbols.includes(inputs.previousInput)){
-        mainText.textContent = `${inputs.currentInput}`;
         inputs.previousNum = inputs.currentNum;
         inputs.currentNum = parseInt(inputs.currentInput);
     }
@@ -48,10 +47,34 @@ function handleNumsClick(){
     console.log(inputs.currentNum);
 }
 
-function handleSymbolClick(symbol){
+function handleSymbolClick(){
 
 }
 
 function handlefunctionClick(func){
 }
 
+function calculate(){
+    if(inputs.currentNum === null || 
+       inputs.previousNum === null ||
+       inputs.currentOperator === null){
+        mainText.textContent = 'ERROR';
+    }
+    else{
+        inputs.previousResult = inputs.result;
+        if(inputs.currentOperator === '+'){
+            inputs.result = +inputs.currentNum + +inputs.previousNum;
+        }
+        else if(inputs.currentOperator === '-'){
+            inputs.result = +inputs.previousNum - +inputs.currentNum;
+        }
+        else if(inputs.currentOperator === '*'){
+            inputs.result = +inputs.previousNum * +inputs.currentNum;
+        }
+        else if(inputs.currentOperator === '/'){
+            inputs.result = +inputs.previousNum / +inputs.currentNum;
+        }
+
+        mainText.textContent = `${inputs.result}`;
+    }
+}
