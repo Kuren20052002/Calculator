@@ -2,32 +2,31 @@ const symbols = '+-*/';
 const mainText = document.querySelector('#main-text');
 const subText = document.querySelector('#sub-text');
 const buttonContainer = document.querySelector('#button-container');
-const equalButton = document.querySelector('#button-equal');
 
-
-let previousResult = 0;
-let currentResult = 0
-
-equalButton.addEventListener('click', calculate);
+let currentResult = 0;
+let newCalculaltion = false;
 
 buttonContainer.addEventListener('click', function(event){
     if(event.target.tagName === 'BUTTON'){  
-        console.log(event.target.textContent)
+
+        if(newCalculaltion && event.target.matches('.nums')) {
+            console.log(true);
+            mainText.textContent = '';
+        }
+        newCalculaltion = false;
+        subText.textContent = `Ans = ${currentResult}`;
+
         if(event.target.matches('.nums')){
-            mainText.textContent += event.target.textContent;
+                mainText.textContent += event.target.textContent;
         }
         else if(event.target.matches('.math-symbol')){
-            console.log(`symbol:${mainText.textContent.slice(-2, -1)}`)
-            if(!symbols.includes(mainText.textContent.slice(-2, -1))){
-                console.log(true);
+            console.log(mainText.textContent);
+            if(!symbols.includes(mainText.textContent.slice(-2, -1)) || mainText.textContent.slice(-2, -1) === ''){
                 mainText.textContent += (' ' + event.target.textContent + ' ');
             }
-            else {
-                console.log(`slice:${mainText.textContent.slice(0, -3)}`)
+            else if(symbols.includes(mainText.textContent.slice(-2, -1))){
                 mainText.textContent = mainText.textContent.slice(0, -3) + ' ' + event.target.textContent + ' ';
-            }
-            console.log(`text:${mainText.textContent}`)
-            
+            }      
         }
         else if(event.target.matches('.function')){
             handlefunctionClick(event.target.textContent);
@@ -36,13 +35,25 @@ buttonContainer.addEventListener('click', function(event){
 });
 
 function handlefunctionClick(func){
-    if(func === 'AC'){
-        mainText.textContent = '';
-        subText.textContent = '';
-        resetInputs();
+    if(func === '='){
+        calculate();
+        newCalculaltion = true;
+        subText.textContent = `${mainText.textContent}`;
+        mainText.textContent = `${currentResult}`;
     }
-    if(func === 'DEL'){
+    else if(func === 'AC'){
+        mainText.textContent = '';
+        subText.textContent = `Ans = ${currentResult}`;
+        newCalculaltion = true;
+    }
+    else if(func === 'DEL'){
         numberPop();
+    }
+    else if(func === 'Ans'){
+        mainText.textContent += 'Ans';
+    }
+    else{
+
     }
 }
 
@@ -54,17 +65,36 @@ function numberPop(){
 }
 
 function calculate(){
+    const calculateElements = mainText.textContent.trim().split(' ');
 
+    if(calculateElements.length === 1 && !symbols.includes(calculateElements[0])){
+        currentResult = calculateElements[0];
+    }
+    else if(!checkCurrentValidLength() || (isNaN(+calculateElements[0]) || isNaN(+calculateElements[2]))){
+        mainText.textContent = 'ERROR';
+        subText.textContent = '';
+        return;
+    }
+    else {
+        if(calculateElements[0] === 'Ans') calculateElements[0] = currentResult;
+        if(calculateElements[1] === 'Ans') calculateElements[1] = currentResult;
+        if(calculateElements[1] === '+'){
+            currentResult = +calculateElements[0] + +calculateElements[2];
+        }
+        else if(calculateElements[1] === '-'){
+            currentResult = +calculateElements[0] - +calculateElements[2];
+        }
+        else if(calculateElements[1] === '*'){
+            currentResult = +calculateElements[0] * +calculateElements[2];
+        }
+        else if(calculateElements[1] === '/'){
+            currentResult = +calculateElements[0] / +calculateElements[2];
+        }
+    }
 }
 
-
-function resetInputs(){
-    inputs = {
-        previousNum: null,
-        currentNum: null,
-        previousInput: null,
-        currentInput: null,
-        currentOperator: null,
-        percentOperator: false,
-    };
+function checkCurrentValidLength(){
+    const elements = mainText.textContent.trim().split(' ');
+    if(elements.length === 3 || (elements.length === 1 && !symbols.includes(elements[0]))) return true;
+    else return false;
 }
