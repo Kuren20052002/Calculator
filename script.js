@@ -24,6 +24,9 @@ buttonContainer.addEventListener('click', function(event){
             if(!symbols.includes(mainText.textContent.slice(-2, -1)) || mainText.textContent.slice(-2, -1) === ''){
                 mainText.textContent += (' ' + event.target.textContent + ' ');
             }
+            else if(mainText.textContent.slice(0, 1) === '-'){
+                mainText.textContent += (' ' + event.target.textContent + ' ');
+            }
             else if(symbols.includes(mainText.textContent.slice(-2, -1))){
                 mainText.textContent = mainText.textContent.slice(0, -3) + ' ' + event.target.textContent + ' ';
             }      
@@ -43,7 +46,7 @@ function handlefunctionClick(func){
     }
     else if(func === 'AC'){
         mainText.textContent = '';
-        subText.textContent = `Ans = ${currentResult}`;
+        subText.textContent = '';
         newCalculaltion = true;
     }
     else if(func === 'DEL'){
@@ -53,7 +56,15 @@ function handlefunctionClick(func){
         mainText.textContent += 'Ans';
     }
     else{
-
+        const elements = mainText.textContent.trim().split(' ');
+        if(elements.length === 1){
+            elements[0] = (-1) * elements[0];
+            mainText.textContent = elements[0];
+        }      
+        else if(elements.length === 3){
+            elements[2] = (-1) * elements[2];
+            mainText.textContent = elements.join(' ');
+        }
     }
 }
 
@@ -66,6 +77,8 @@ function numberPop(){
 
 function calculate(){
     const calculateElements = mainText.textContent.trim().split(' ');
+    if(calculateElements[0] === 'Ans') calculateElements[0] = currentResult;
+    if(calculateElements[1] === 'Ans') calculateElements[1] = currentResult;
 
     if(calculateElements.length === 1 && !symbols.includes(calculateElements[0])){
         currentResult = calculateElements[0];
@@ -76,8 +89,6 @@ function calculate(){
         return;
     }
     else {
-        if(calculateElements[0] === 'Ans') calculateElements[0] = currentResult;
-        if(calculateElements[1] === 'Ans') calculateElements[1] = currentResult;
         if(calculateElements[1] === '+'){
             currentResult = +calculateElements[0] + +calculateElements[2];
         }
@@ -91,6 +102,8 @@ function calculate(){
             currentResult = +calculateElements[0] / +calculateElements[2];
         }
     }
+
+    currentResult = Math.round(currentResult * 100) / 100;
 }
 
 function checkCurrentValidLength(){
