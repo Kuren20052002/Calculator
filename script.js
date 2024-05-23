@@ -21,8 +21,11 @@ buttonContainer.addEventListener('click', function(event){
                 mainText.textContent += event.target.textContent;
         }
         else if(event.target.matches('.math-symbol')){
-            console.log(mainText.textContent);
-            if(!symbols.includes(mainText.textContent.slice(-2, -1)) || mainText.textContent.slice(-2, -1) === ''){
+            if(checkCurrentValidLength()){
+                calculate();
+                mainText.textContent = `${currentResult}` + (' ' + event.target.textContent + ' ');
+            }
+            else if(!symbols.includes(mainText.textContent.slice(-2, -1)) || mainText.textContent.slice(-2, -1) === ''){
                 mainText.textContent += (' ' + event.target.textContent + ' ');
             }
             else if(mainText.textContent.slice(0, 1) === '-'){
@@ -42,8 +45,10 @@ function handlefunctionClick(func){
     if(func === '='){
         calculate();
         newCalculaltion = true;
-        subText.textContent = `${mainText.textContent}`;
-        mainText.textContent = `${currentResult}`;
+        if(mainText.textContent !== 'ERROR'){
+            subText.textContent = `${mainText.textContent}`;
+            mainText.textContent = `${currentResult}`;
+        }
     }
     else if(func === 'AC'){
         mainText.textContent = '';
@@ -81,17 +86,20 @@ function numberPop(){
         mainText.textContent = mainText.textContent.slice(0, -3);
     }
     else mainText.textContent = mainText.textContent.slice(0, -1);
+
+    if(mainText.textContent = '') subText.textContent = '';
 }
 
 function calculate(){
     const calculateElements = mainText.textContent.trim().split(' ');
     if(calculateElements[0] === 'Ans') calculateElements[0] = currentResult;
-    if(calculateElements[1] === 'Ans') calculateElements[1] = currentResult;
+    if(calculateElements[2] === 'Ans') calculateElements[2] = currentResult;
 
     if(calculateElements.length === 1 && !symbols.includes(calculateElements[0])){
         currentResult = calculateElements[0];
     }
-    else if(!checkCurrentValidLength() || (isNaN(+calculateElements[0]) || isNaN(+calculateElements[2]))){
+    else if(calculateElements.length === 2|| (isNaN(+calculateElements[0]) || isNaN(+calculateElements[2]))){
+        console.log('ERROR');
         mainText.textContent = 'ERROR';
         subText.textContent = '';
         return;
@@ -116,7 +124,7 @@ function calculate(){
 
 function checkCurrentValidLength(){
     const elements = mainText.textContent.trim().split(' ');
-    if(elements.length === 3 || (elements.length === 1 && !symbols.includes(elements[0]))) return true;
+    if(elements.length === 3 ) return true;
     else return false;
 }
 
