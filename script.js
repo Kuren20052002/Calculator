@@ -1,4 +1,5 @@
 const symbols = '+-*/';
+const digits ='0123456789';
 const mainText = document.querySelector('#main-text');
 const subText = document.querySelector('#sub-text');
 const buttonContainer = document.querySelector('#button-container');
@@ -9,7 +10,7 @@ let newCalculaltion = false;
 buttonContainer.addEventListener('click', function(event){
     if(event.target.tagName === 'BUTTON'){  
 
-        if(newCalculaltion && event.target.matches('.nums')) {
+        if(newCalculaltion && !event.target.matches('.math-symbol')) {
             console.log(true);
             mainText.textContent = '';
         }
@@ -57,6 +58,10 @@ function handlefunctionClick(func){
     }
     else{
         const elements = mainText.textContent.trim().split(' ');
+        if(mainText.textContent.slice(-1) === 's'){
+            currentResult = (-1) * currentResult;
+            return;
+        }
         if(elements.length === 1){
             elements[0] = (-1) * elements[0];
             mainText.textContent = elements[0];
@@ -70,6 +75,9 @@ function handlefunctionClick(func){
 
 function numberPop(){
     if(symbols.includes(mainText.textContent.slice(-2, -1))){
+        mainText.textContent = mainText.textContent.slice(0, -3);
+    }
+    else if(mainText.textContent.slice(-1) === 's'){
         mainText.textContent = mainText.textContent.slice(0, -3);
     }
     else mainText.textContent = mainText.textContent.slice(0, -1);
@@ -111,3 +119,58 @@ function checkCurrentValidLength(){
     if(elements.length === 3 || (elements.length === 1 && !symbols.includes(elements[0]))) return true;
     else return false;
 }
+
+document.addEventListener('keydown', function(event){
+    console.log(event.key);
+    const key = event.key;
+    if(digits.includes(key)){
+        const digitButton = document.querySelector(`#button-${key}`);
+        if(digitButton) digitButton.click();
+    }
+    else if(symbols.includes(key)){
+        let symbolButton = 0;
+        switch(key){
+            case '+':
+                symbolButton = document.querySelector('#button-plus');
+                break;
+            case '-':
+                symbolButton = document.querySelector('#button-minus');
+                break;
+            case '*':
+                symbolButton = document.querySelector('#button-mutiply');
+                break;
+            case '/':
+                symbolButton = document.querySelector('#button-divide');
+                break;
+        };
+        if(symbolButton) symbolButton.click();
+    }
+    else if(key === 'f'){
+        const flipButton = document.querySelector(`#button-flip`);
+        if(flipButton) flipButton.click();
+    }
+    else if(key === 'Escape'){
+        const ACButton = document.querySelector(`#button-AC`);
+        if(ACButton) ACButton.click();
+    }
+    else if(key === 'f'){
+        const flipButton = document.querySelector(`#button-flip`);
+        if(flipButton) flipButton.click();
+    }
+    else if(key === 'Backspace'){
+        const DELButton = document.querySelector(`#button-delete`);
+        if(DELButton) DELButton.click();
+    }
+    else if(key === '.'){
+        const dotButton = document.querySelector(`#button-dot`);
+        if(dotButton) dotButton.click();
+    }
+    else if(key === 'a'){
+        const ansButton = document.querySelector(`#button-Ans`);
+        if(ansButton) ansButton.click();
+    }
+    else if(key === 'Enter'){
+        const equalButton = document.querySelector(`#button-equal`);
+        if(equalButton) equalButton.click();
+    }
+});
