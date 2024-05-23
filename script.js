@@ -57,6 +57,10 @@ function handlefunctionClick(func){
     }
     else if(func === 'DEL'){
         numberPop();
+        console.log(mainText.textContent);
+        if(mainText.textContent === '' || mainText.textContent === ' ' ){
+            subText.textContent = '';
+        }
     }
     else if(func === 'Ans'){
         mainText.textContent += 'Ans';
@@ -65,6 +69,7 @@ function handlefunctionClick(func){
         const elements = mainText.textContent.trim().split(' ');
         if(mainText.textContent.slice(-1) === 's'){
             currentResult = (-1) * currentResult;
+            subText.textContent = `Ans = ${currentResult}`;
             return;
         }
         if(elements.length === 1){
@@ -87,7 +92,6 @@ function numberPop(){
     }
     else mainText.textContent = mainText.textContent.slice(0, -1);
 
-    if(mainText.textContent = '') subText.textContent = '';
 }
 
 function calculate(){
@@ -160,10 +164,6 @@ document.addEventListener('keydown', function(event){
     else if(key === 'Escape'){
         const ACButton = document.querySelector(`#button-AC`);
         if(ACButton) ACButton.click();
-    }
-    else if(key === 'f'){
-        const flipButton = document.querySelector(`#button-flip`);
-        if(flipButton) flipButton.click();
     }
     else if(key === 'Backspace'){
         const DELButton = document.querySelector(`#button-delete`);
